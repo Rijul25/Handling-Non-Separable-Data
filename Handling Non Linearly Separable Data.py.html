@@ -1,0 +1,171 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[34]:
+
+
+from sklearn.datasets import make_circles
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+
+
+# In[35]:
+
+
+X,Y=make_circles(n_samples=500,noise=0.02)
+
+
+# In[36]:
+
+
+print(X.shape)
+print(Y.shape)
+
+
+# In[37]:
+
+
+plt.scatter(X[:,0],X[:,1],c=Y)
+
+
+# In[38]:
+
+
+def phi(X):
+    """Non linear transformation"""
+    X1=X[:,0]
+    X2=X[:,1]
+    X3=X1**2 + X2**2
+    X_=np.zeros((X.shape[0],3))
+    print(X_.shape)
+    X_[:,:-1]=X
+    X_[:,-1]=X3
+    return X_
+
+
+# In[39]:
+
+
+X_=phi(X)
+
+
+# In[40]:
+
+
+print(X[:3,:])
+
+
+# In[41]:
+
+
+print(X_[:3,:])
+
+
+# In[42]:
+
+
+def plot3D(X,show=True):
+    fig=plt.figure(figsize=(10,10))
+    ax=fig.add_subplot(111,projection='3d')
+    X1=X[:,0]
+    X2=X[:,1]
+    X3=X[:,2]
+    
+    ax.scatter(X1,X2,X3,zdir='z',s=20,c=Y,depthshade=True)
+    if(show==True):
+        plt.show()
+    return ax
+
+
+# In[43]:
+
+
+ax=plot3D(X_)
+
+
+# # Logistic Classifier
+
+# In[44]:
+
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+
+
+# In[45]:
+
+
+lr=LogisticRegression()
+
+
+# In[46]:
+
+
+acc=cross_val_score(lr,X,Y,cv=5).mean()
+print("Accuracy X(2D) is %.4f"%(acc*100))
+
+
+# # Logistic Classifier on new generated dataset
+
+# In[47]:
+
+
+acc=cross_val_score(lr,X_,Y,cv=5).mean()
+print("Accuracy X(2D) is %.4f"%(acc*100))
+
+
+# # Visualising the data
+
+# In[48]:
+
+
+lr.fit(X_,Y)
+
+
+# In[49]:
+
+
+wts=lr.coef_
+print(wts)
+
+
+# In[50]:
+
+
+bias=lr.intercept_
+print(bias)
+
+
+# In[51]:
+
+
+xx,yy=np.meshgrid(range(-2,2),range(-2,2))
+print(xx)
+
+
+# In[52]:
+
+
+print(yy)
+
+
+# In[53]:
+
+
+z=-(wts[0,0]*xx + wts[0,1]*yy + bias)/wts[0,2]
+print(z)
+
+
+# In[56]:
+
+
+ax=plot3D(X_,False)
+ax.plot_surface(xx,yy,z,alpha=0.5)
+
+
+# In[ ]:
+
+
+
+
